@@ -1,52 +1,190 @@
-'use server'
+import { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@material-tailwind/react'; // Assuming you're using Material Tailwind
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import axios from 'axios';
+import { sendPurchaseEmail } from './path/to/your/emailService'; // Adjust the path accordingly
 
-import { Resend } from 'resend';
+const CompleteOrderCard = ({ prices }) => {
+  const [url, setUrl] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [reviewType, setReviewType] = useState('');
+  const [reviewCount, setReviewCount] = useState('');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+  const handlePaymentCompletion = async (details, data) => {
+    try {
+      // Send the URL along with payment details to your backend
+      await axios.post('/api/submit-order', {
+        url: url,
+        paymentDetails: details,
+        paymentData: data,
+        name: name,
+        email: email,
+        reviewType: reviewType,
+        reviewCount: reviewCount,
+      });
 
-export async function sendPurchaseEmail(formData: FormData) {
-  console.log('Sending purchase email with Resend API key:', process.env.RESEND_API_KEY);
-  const name = formData.get('name') as string;
-  const email = formData.get('email') as string;
-  const reviewType = formData.get('reviewType') as string;
-  const reviewCount = formData.get('reviewCount') as string;
-  const totalPrice = formData.get('totalPrice') as string;
+      // Prepare form data for sending email
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('reviewType', reviewType);
+      formData.append('reviewCount', reviewCount);
+      formData.append('totalPrice', prices.total.toString());
 
-  try {
-    await resend.emails.send({
-      from: 'Orderboosts <noreply@orderboosts.com>',
-      to: [email],
-      subject: 'Your G2 Review Purchase Information',
-      html: `
-        <h1>Thank you for your purchase, ${name}!</h1>
-        <p>We've received your order for ${reviewCount} ${reviewType} G2 review(s) at a total price of $${totalPrice}.</p>
-        <p>We'll be in touch shortly with more information about your purchase.</p>
-        <p>If you have any questions, please don't hesitate to contact us.</p>
-      `
-    });
+      // Send purchase email
+      await sendPurchaseEmail(formData);
 
-    // Send an email to the admin
-    await resend.emails.send({
-      from: 'Orderboosts <noreply@orderboosts.com>',
-      to: ['admin@orderboosts.com'],
-      subject: 'New G2 Review Purchase',
-      html: `
-        <h1>New Purchase Alert</h1>
-        <p>Customer Name: ${name}</p>
-        <p>Customer Email: ${email}</p>
-        <p>Review Type: ${reviewType}</p>
-        <p>Review Count: ${reviewCount}</p>
-        <p>Total Price: $${totalPrice}</p>
-      `
-    });
-
-    return { success: true, message: 'Purchase successful! Check your email for more information.' };
-  } catch (error) {
-    console.error('Failed to send email:', error);
-    if (error instanceof Error) {
-      console.error('Error message:', error.message);
+      alert('Payment successful and URL submitted! Check your email for more information.');
+    } catch (error) {
+      console.error('Error submitting order:', error);
+      alert('There was an error processing your payment.');
     }
-    return { success: false, message: 'Failed to process purchase. Please try again.' };
-  }
-}
+  };
+
+  return (
+    <Card className="max-w-xl mx-auto mb-8 sm:mb-16 bg-[#1a1630] border-2 border-[#2a253c] shadow-lg">
+      <CardHeader>
+        <CardTitle className="text-white text-xl font-semibold">
+          Complete Your Order
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="bg-[#0f0c24] p-6 rounded-lg">
+          {/* Additional Form Fields */}
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-3 text-sm font-medium">
+              Name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-3 bg-[#1a1630] border border-[#2a253c] rounded-lg 
+                        focus:ring-2 focus:ring-[#ff4b36] focus:border-transparent 
+                        transition-all duration-300 placeholder-gray-500 text-white"
+              placeholder="Your Name"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-3 text-sm font-medium">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 bg-[#1a1630] border border-[#2a253c] rounded-lg 
+                        focus:ring-2 focus:ring-[#ff4b36] focus:border-transparent 
+                        transition-all duration-300 placeholder-gray-500 text-white"
+              placeholder="Your Email"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-3 text-sm font-medium">
+              Review Type
+            </label>
+            <input
+              type="text"
+              value={reviewType}
+              onChange={(e) => setReviewType(e.target.value)}
+              className="w-full px-4 py-3 bg-[#1a1630] border border-[#2a253c] rounded-lg 
+                        focus:ring-2 focus:ring-[#ff4b36] focus:border-transparent 
+                        transition-all duration-300 placeholder-gray-500 text-white"
+              placeholder="Review Type"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-3 text-sm font-medium">
+              Review Count
+            </label>
+            <input
+              type="number"
+              value={reviewCount}
+              onChange={(e) => setReviewCount(e.target.value)}
+              className="w-full px-4 py-3 bg-[#1a1630] border border-[#2a253c] rounded-lg 
+                        focus:ring-2 focus:ring-[#ff4b36] focus:border-transparent 
+                        transition-all duration-300 placeholder-gray-500 text-white"
+              placeholder="Number of Reviews"
+              required
+            />
+          </div>
+
+          {/* URL Input Section */}
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-3 text-sm font-medium">
+              Product/Service URL
+            </label>
+            <input
+              type="url"
+              name="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="w-full px-4 py-3 bg-[#1a1630] border border-[#2a253c] rounded-lg 
+                        focus:ring-2 focus:ring-[#ff4b36] focus:border-transparent 
+                        transition-all duration-300 placeholder-gray-500 text-white"
+              placeholder="https://example.com/product"
+              required
+            />
+          </div>
+
+          {/* Total Price Display Section */}
+          <div className="flex justify-between items-center mb-8">
+            <span className="text-gray-300">Total:</span>
+            <span className="text-2xl font-bold text-[#ff4b36]">
+              ${prices.total}
+            </span>
+          </div>
+
+          {/* PayPal Payment Button Section */}
+          <PayPalScriptProvider
+            options={{
+              "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+              currency: "USD",
+              intent: "capture",
+            }}
+          >
+            <PayPalButtons
+              style={{ layout: 'vertical' }}
+              createOrder={(data, actions) => {
+                return actions.order.create({
+                  purchase_units: [
+                    {
+                      amount: {
+                        value: prices.total.toString(),
+                      },
+                    },
+                  ],
+                });
+              }}
+              onApprove={async (data, actions) => {
+                const order = await actions.order.capture();
+                handlePaymentCompletion(order, data);
+              }}
+              onError={(err) => {
+                console.error('PayPal Error:', err);
+                alert('There was an error processing your payment.');
+              }}
+            />
+          </PayPalScriptProvider>
+
+          {/* Security Indicators Section */}
+          <div className="mt-6 flex justify-center gap-4 text-white opacity-75">
+            <span>💳</span>
+            <span>🔒</span>
+            <span>🛡️</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default CompleteOrderCard;
 

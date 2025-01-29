@@ -1,108 +1,106 @@
-import Link from 'next/link'
-import Image from 'next/image'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+"use client";
 
-export default function ContactUs() {
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+
+export default function ContactPage() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setStatus('Thank you! Your message has been sent.');
+        setName('');
+        setEmail('');
+        setMessage('');
+      } else {
+        setStatus('There was an error sending your message. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setStatus('There was an error submitting the form. Please try again.');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0f0c24]">
-      {/* Header */}
-      <header className="border-b border-gray-800">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/orderboosts-high-resolution-logo-7MVzOBcVPWbQ2SJKioOcog58pL7bP1.png"
-              alt="Orderboosts"
-              width={150}
-              height={40}
-              className="object-contain"
-            />
-          </Link>
-          <nav className="flex gap-6">
-            <Link href="/" className="text-sm text-white hover:text-gray-300">HOME</Link>
-            <Link href="/contact" className="text-sm text-white hover:text-gray-300">CONTACT US</Link>
-            <Link href="/services" className="text-sm text-white hover:text-gray-300">SERVICES</Link>
-          </nav>
-        </div>
-      </header>
-
-      {/* Main Content */}
+      <Header />
       <main className="flex-1 py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold text-white mb-8 text-center">Contact Us</h1>
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-            <form className="space-y-4">
+          <div className="max-w-md mx-auto bg-[#1a1630] rounded-lg shadow-md p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                <Input type="text" id="name" name="name" required />
+                <label htmlFor="name" className="block text-sm font-medium text-white">
+                  Name
+                </label>
+                <Input 
+                  type="text" 
+                  id="name" 
+                  name="name" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  required 
+                  className="bg-gray-800 text-white border-gray-700" 
+                />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                <Input type="email" id="email" name="email" required />
+                <label htmlFor="email" className="block text-sm font-medium text-white">
+                  Email
+                </label>
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-gray-800 text-white border-gray-700"
+                />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
-                <Textarea id="message" name="message" rows={4} required />
+                <label htmlFor="message" className="block text-sm font-medium text-white">
+                  Message
+                </label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  required
+                  className="bg-gray-800 text-white border-gray-700"
+                />
               </div>
               <Button type="submit" className="w-full bg-[#ff4b36] hover:bg-[#ff3621] text-white">
                 Send Message
               </Button>
+              {status && <p className={`mt-4 text-center ${status.includes('error') ? 'text-red-500' : 'text-green-500'}`}>{status}</p>}
             </form>
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-black text-white py-16">
-        <div className="container mx-auto px-4 grid md:grid-cols-3 gap-8">
-          <div>
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/orderboosts-high-resolution-logo-7MVzOBcVPWbQ2SJKioOcog58pL7bP1.png"
-              alt="Orderboosts"
-              width={200}
-              height={50}
-              className="mb-4 object-contain"
-            />
-            <p className="text-gray-400">
-              Orderboosts.com is a trusted, USA-based company specializing in enhancing your social media presence across platforms.
-            </p>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Our Services</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/services/g2-reviews" className="text-gray-400 hover:text-white">
-                  Buy G2 Reviews
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white">
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
-  )
+  );
 }
 

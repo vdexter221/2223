@@ -1,171 +1,172 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import LoadingSpinner from './components/LoadingSpinner'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import LoadingSpinner from "./components/LoadingSpinner"
+import { siteConfig } from "./config/site"
+import { CheckCircle, Star, TrendingUp, Users } from "lucide-react"
+import AnimatedBalls from "./components/AnimatedBalls"
+import Footer from "./components/Footer"
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const router = useRouter()
 
   const handleGetStarted = () => {
-    setIsLoading(true);
+    setIsLoading(true)
     setTimeout(() => {
-      router.push('/services/g2-reviews');
-    }, 1000); // Simulate a 1-second loading time
-  };
+      router.push("/services/g2-reviews")
+    }, 1000)
+  }
+
+  const handleLearnMore = () => {
+    const featuresSection = document.getElementById("why-choose-orderboosts")
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0f0c24]">
       {isLoading && <LoadingSpinner />}
-      {/* Header */}
-      <header className="border-b border-gray-800">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/orderboosts-high-resolution-logo-7MVzOBcVPWbQ2SJKioOcog58pL7bP1.png"
-              alt="Orderboosts"
-              width={150}
-              height={40}
-              className="object-contain"
-            />
-          </Link>
-          <nav className="flex gap-6">
-            <Link href="/" className="text-sm text-white hover:text-gray-300">HOME</Link>
-            <Link href="/contact" className="text-sm text-white hover:text-gray-300">CONTACT US</Link>
-            <Link href="/services" className="text-sm text-white hover:text-gray-300">SERVICES</Link>
-          </nav>
-        </div>
-      </header>
 
-      {/* Hero Section */}
-      <main className="flex-1">
+      {/* Main content */}
+      <main className="flex-1 pt-20">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-4rem)] py-12">
+          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-5rem)] py-12">
             <div className="space-y-8">
               <h1 className="text-5xl font-bold text-white leading-tight opacity-0 animate-fade-in-up">
-                Use reviews as a competitive marketing tool.
+                Boost Your Online Reputation with Authentic Reviews
               </h1>
               <p className="text-xl text-gray-400 opacity-0 animate-fade-in-up delay-200">
-                Our world-class review services ensure you have the higher online reputation you deserve.
+                Enhance your product's credibility and visibility with our world-class review management services.
               </p>
               <div className="flex gap-4 opacity-0 animate-fade-in-up delay-400">
-                <Button 
-                  size="lg" 
-                  className="bg-[#ff4b36] hover:bg-[#ff3621] text-white px-8"
+                <Button
+                  size="lg"
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-11 rounded-md bg-[#ff4b36] hover:bg-[#ff3621] text-white px-8 transform hover:scale-105"
                   onClick={handleGetStarted}
                 >
-                  GET STARTED NOW
+                  Get Started
                 </Button>
-              </div>
-            </div>
-            <div className="relative h-[500px] hidden lg:block opacity-0 animate-fade-in-up delay-600">
-              <Image
-                src="/placeholder.svg?height=500&width=600"
-                alt="Marketing Illustration"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Services Preview */}
-        <div className="bg-black/50 py-24">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">Our Services</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-[#1a1630] p-6 rounded-lg">
-                <h3 className="text-xl font-semibold text-white mb-4">G2 Reviews</h3>
-                <p className="text-gray-400 mb-6">
-                  Enhance your product's credibility with authentic G2 reviews from real users.
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="text-white border-[#ff4b36] hover:bg-[#ff4b36]"
-                  onClick={handleGetStarted}
+                <Button
+                  size="lg"
+                  className="text-white bg-transparent border-2 border-[#ff4b36] hover:bg-[#ff4b36] transition-all duration-300 transform hover:scale-105"
+                  onClick={handleLearnMore}
                 >
                   Learn More
                 </Button>
               </div>
-              <div className="bg-[#1a1630] p-6 rounded-lg">
-                <h3 className="text-xl font-semibold text-white mb-4">Trustpilot Reviews</h3>
-                <p className="text-gray-400 mb-6">
-                  Build trust and credibility with verified Trustpilot reviews.
-                </p>
-                <Button variant="outline" className="text-white border-[#ff4b36] hover:bg-[#ff4b36]">
-                  Coming Soon
-                </Button>
+            </div>
+            <div className="relative h-[500px] hidden lg:block opacity-0 animate-fade-in-up delay-600">
+              <AnimatedBalls />
+            </div>
+          </div>
+        </div>
+
+        {/* Statistics Section */}
+        <div className="py-24 bg-black/30">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-white text-center mb-16">We Know Customer Experience</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-[#1a1630] p-8 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="text-5xl font-bold text-[#ff4b36] mb-4">50+</div>
+                <div className="text-gray-400">Customers from</div>
+                <div className="text-white font-semibold">Countries</div>
               </div>
-              <div className="bg-[#1a1630] p-6 rounded-lg">
-                <h3 className="text-xl font-semibold text-white mb-4">Custom Solutions</h3>
-                <p className="text-gray-400 mb-6">
-                  Tailored review management solutions for your specific needs.
-                </p>
-                <Link href="/contact">
-                  <Button variant="outline" className="text-white border-[#ff4b36] hover:bg-[#ff4b36]">
-                    Contact Us
-                  </Button>
-                </Link>
+              <div className="bg-[#1a1630] p-8 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="text-5xl font-bold text-[#ff4b36] mb-4">100,000+</div>
+                <div className="text-gray-400">Feedback</div>
+                <div className="text-white font-semibold">Collected</div>
+              </div>
+              <div className="bg-[#1a1630] p-8 rounded-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="text-5xl font-bold text-[#ff4b36] mb-4">95%</div>
+                <div className="text-gray-400">Customer</div>
+                <div className="text-white font-semibold">Satisfaction Rate</div>
               </div>
             </div>
           </div>
         </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="bg-black text-white py-16">
-        <div className="container mx-auto px-4 grid md:grid-cols-3 gap-8">
-          <div>
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/orderboosts-high-resolution-logo-7MVzOBcVPWbQ2SJKioOcog58pL7bP1.png"
-              alt="Orderboosts"
-              width={200}
-              height={50}
-              className="mb-4 object-contain"
-            />
-            <p className="text-gray-400">
-              Orderboosts.com is a trusted, USA-based company specializing in enhancing your social media presence across platforms.
-            </p>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Our Services</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/services/g2-reviews" className="text-gray-400 hover:text-white">
-                  Buy G2 Reviews
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white">
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
+        {/* Features Section */}
+        <div id="why-choose-orderboosts" className="bg-black/50 py-24">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-white text-center mb-12">Why Choose Orderboosts?</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <Card className="bg-[#1a1630] border-none">
+                <CardHeader>
+                  <CheckCircle className="w-12 h-12 text-[#ff4b36] mb-4" />
+                  <CardTitle className="text-white">Authentic Reviews</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-400">We provide genuine reviews from real users to boost your credibility.</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#1a1630] border-none">
+                <CardHeader>
+                  <TrendingUp className="w-12 h-12 text-[#ff4b36] mb-4" />
+                  <CardTitle className="text-white">Improved Visibility</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-400">
+                    Increase your product's visibility and attract more potential customers.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#1a1630] border-none">
+                <CardHeader>
+                  <Users className="w-12 h-12 text-[#ff4b36] mb-4" />
+                  <CardTitle className="text-white">Expert Team</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-400">Our experienced team ensures high-quality review management services.</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-[#1a1630] border-none">
+                <CardHeader>
+                  <Star className="w-12 h-12 text-[#ff4b36] mb-4" />
+                  <CardTitle className="text-white">Tailored Solutions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-400">We offer customized strategies to meet your specific business needs.</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
-      </footer>
+
+        {/* CTA Section */}
+        <div className="py-24">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold text-white mb-6">Ready to Boost Your Online Reputation?</h2>
+            <p className="text-xl text-gray-400 mb-8">
+              Get started today and see the difference authentic reviews can make for your business.
+            </p>
+            <Button
+              size="lg"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-11 rounded-md bg-[#ff4b36] hover:bg-[#ff3621] text-white px-8 transform hover:scale-105"
+              onClick={handleGetStarted}
+            >
+              Get Started Now
+            </Button>
+          </div>
+        </div>
+      </main>
+      <Footer />
     </div>
   )
 }
